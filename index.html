@@ -1,0 +1,871 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DUNIA INTERNET - Pendaftaran WiFi Resmi</title>
+    <style>
+        /* --- RESET & BASE STYLE --- */
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        html {
+            scroll-behavior: smooth;
+        }
+        body {
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: #02040a;
+            color: #ffffff;
+            overflow-x: hidden;
+            perspective: 1000px;
+        }
+
+        /* --- BACKGROUND ANIMASI BERGERAK --- */
+        #particle-canvas {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -2;
+            pointer-events: none;
+        }
+        .bg-animate-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -3;
+            background: linear-gradient(125deg, #02040a, #050b1a, #021329, #02040a);
+            background-size: 400% 400%;
+            animation: gradientWave 15s ease infinite;
+        }
+
+        @keyframes gradientWave {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* --- STICKY GLASSMORPHISM NAVBAR --- */
+        .navbar {
+            position: fixed;
+            top: 0; left: 0; width: 100%;
+            background: rgba(2, 4, 10, 0.75);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(0, 242, 254, 0.15);
+            z-index: 9999;
+        }
+        .navbar-container {
+            max-width: 1240px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+        }
+        .navbar-logo {
+            font-size: 1.4rem;
+            font-weight: 900;
+            letter-spacing: 1px;
+            background: linear-gradient(45deg, #00f2fe, #f6d365);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-decoration: none;
+            position: relative;
+        }
+        .navbar-logo::after {
+            content: '';
+            position: absolute;
+            top: -5px; left: -10px; right: -10px; bottom: -5px;
+            background: rgba(0, 242, 254, 0.1);
+            filter: blur(10px);
+            border-radius: 10px;
+            z-index: -1;
+            animation: pulseGlow 2s infinite alternate;
+        }
+        .navbar-menu {
+            display: flex;
+            list-style: none;
+            gap: 30px;
+            align-items: center;
+        }
+        .navbar-item a {
+            color: #94a3b8;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: color 0.3s;
+            position: relative;
+            padding: 8px 0;
+        }
+        .navbar-item a::after {
+            content: '';
+            position: absolute;
+            bottom: 0; left: 50%; width: 0; height: 2px;
+            background: linear-gradient(90deg, #00f2fe, #f6d365);
+            transition: width 0.3s ease, left 0.3s ease;
+        }
+        .navbar-item a:hover { color: #ffffff; }
+        .navbar-item a:hover::after { width: 100%; left: 0; }
+        
+        .nav-btn {
+            background: linear-gradient(45deg, rgba(0, 242, 254, 0.15), rgba(246, 211, 101, 0.15));
+            border: 1px solid rgba(0, 242, 254, 0.4);
+            color: #00f2fe !important;
+            padding: 8px 20px !important;
+            border-radius: 30px;
+            box-shadow: 0 0 15px rgba(0, 242, 254, 0.1);
+        }
+        .nav-btn:hover {
+            background: linear-gradient(45deg, #00f2fe, #f6d365) !important;
+            color: #02040a !important;
+            box-shadow: 0 0 25px rgba(0, 242, 254, 0.5);
+            border-color: transparent;
+        }
+
+        .menu-toggle {
+            display: none;
+            flex-direction: column;
+            gap: 5px;
+            cursor: pointer;
+        }
+        .menu-toggle span { width: 25px; height: 3px; background-color: #ffffff; transition: 0.3s; }
+
+        /* --- HERO SECTION --- */
+        .hero {
+            padding: 190px 20px 80px 20px;
+            text-align: center;
+            position: relative;
+        }
+        .hero-badge {
+            background: rgba(0, 242, 254, 0.07);
+            border: 1px solid rgba(0, 242, 254, 0.3);
+            padding: 6px 18px;
+            border-radius: 30px;
+            font-size: 0.8rem;
+            font-weight: 800;
+            letter-spacing: 2px;
+            color: #00f2fe;
+            display: inline-block;
+            margin-bottom: 25px;
+            text-transform: uppercase;
+            animation: floatBadge 4s infinite ease-in-out;
+        }
+        
+        .hero h1 {
+            font-size: 4.8rem;
+            font-weight: 950;
+            line-height: 1.1;
+            background: linear-gradient(45deg, #00f2fe, #f6d365);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 15px;
+        }
+        
+        .hero-description {
+            font-size: 1.35rem;
+            margin: 25px auto;
+            color: #cbd5e1;
+            max-width: 750px;
+            font-weight: 500;
+            line-height: 1.7;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+            border-left: 3px solid #00f2fe;
+            border-right: 3px solid #f6d365;
+            padding: 0 20px;
+        }
+
+        .slide-text-container {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 25px;
+            overflow: hidden;
+            height: 45px;
+        }
+        .slide-word {
+            font-size: 1.8rem;
+            font-weight: 800;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            background: linear-gradient(135deg, #ffffff 40%, #a5f3fc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            opacity: 0;
+            transform: translateY(30px);
+            animation: infiniteSlideMove 4s cubic-bezier(0.25, 1, 0.5, 1) infinite;
+        }
+        
+        .word-1 { animation-delay: 0s; }
+        .word-2 { animation-delay: 0.3s; }
+        .word-3 { animation-delay: 0.6s; }
+
+        @keyframes infiniteSlideMove {
+            0% { opacity: 0; transform: translateY(30px) scale(0.9); }
+            8% { opacity: 1; transform: translateY(0) scale(1); }
+            70% { opacity: 1; transform: translateY(0) scale(1); filter: blur(0px); }
+            80% { opacity: 0; transform: translateY(-25px) scale(0.95); filter: blur(2px); }
+            100% { opacity: 0; transform: translateY(-25px); }
+        }
+
+        /* --- MAIN CONTAINER & GRID --- */
+        .container {
+            max-width: 1240px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .moving-section-title {
+            text-align: center;
+            font-size: 2.8rem;
+            color: #ffffff;
+            margin-bottom: 60px;
+            font-weight: 850;
+            padding-top: 80px;
+            position: relative;
+            display: block;
+            animation: titleFloat 3.5s ease-in-out infinite alternate;
+        }
+        .moving-section-title span {
+            background: linear-gradient(45deg, #00f2fe, #f6d365);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            position: relative;
+            display: inline-block;
+            animation: neonGlow 1.8s ease-in-out infinite alternate;
+        }
+
+        @keyframes titleFloat {
+            0% { transform: translateY(0px); }
+            100% { transform: translateY(-12px); }
+        }
+        @keyframes neonGlow {
+            0% { text-shadow: 0 0 10px rgba(0, 242, 254, 0.2), 0 0 20px rgba(0, 242, 254, 0.1); }
+            100% { text-shadow: 0 0 25px rgba(0, 242, 254, 0.6), 0 0 40px rgba(246, 211, 101, 0.4); }
+        }
+
+        .provider-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 40px;
+            margin-bottom: 100px;
+        }
+
+        /* --- SCROLL ANIMATION --- */
+        .scroll-animate {
+            opacity: 0;
+            transform: translateY(60px) rotateX(10deg);
+            filter: blur(10px);
+            transition: all 0.8s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+        .scroll-animate.show {
+            opacity: 1;
+            transform: translateY(0) rotateX(0deg);
+            filter: blur(0);
+        }
+
+        /* --- PREMIUM CARD WITH 3D TILT --- */
+        .provider-card {
+            background: rgba(8, 12, 24, 0.82);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border-radius: 24px;
+            padding: 35px;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            transform-style: preserve-3d;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.6);
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+        .provider-card:hover {
+            border-color: rgba(0, 242, 254, 0.5);
+            box-shadow: 0 25px 50px rgba(0, 242, 254, 0.15);
+        }
+
+        .card-header, .price-box, .card-btn, .promo-tag {
+            transform: translateZ(25px);
+        }
+        .card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+            padding-bottom: 20px;
+            margin-bottom: 25px;
+        }
+        .brand-name { font-size: 2.1rem; font-weight: 900; }
+        .badge { padding: 6px 14px; border-radius: 30px; font-size: 0.7rem; font-weight: 800; text-transform: uppercase; }
+
+        /* Provider Color Accent Themes */
+        .xl { color: #00f2fe; text-shadow: 0 0 15px rgba(0,242,254,0.4); } 
+        .xl-bg { background: rgba(0, 242, 254, 0.1); color: #00f2fe; border: 1px solid rgba(0, 242, 254, 0.2); }
+        .indihome { color: #ff4545; text-shadow: 0 0 15px rgba(255,69,69,0.4); } 
+        .indihome-bg { background: rgba(255, 69, 69, 0.1); color: #ff4545; border: 1px solid rgba(255, 69, 69, 0.2); }
+        .myrep { color: #b066ff; text-shadow: 0 0 15px rgba(176,102,255,0.4); } 
+        .myrep-bg { background: rgba(176, 102, 255, 0.1); color: #b066ff; border: 1px solid rgba(176, 102, 255, 0.2); }
+        .cbn { color: #38bdf8; text-shadow: 0 0 15px rgba(56,189,248,0.4); } 
+        .cbn-bg { background: rgba(56, 189, 248, 0.1); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.2); }
+        .indosat { color: #22c55e; text-shadow: 0 0 15px rgba(34,197,94,0.4); } 
+        .indosat-bg { background: rgba(34, 197, 94, 0.1); color: #22c55e; border: 1px solid rgba(34, 197, 94, 0.2); }
+        .idplay { color: #f59e0b; text-shadow: 0 0 15px rgba(245,158,11,0.4); } 
+        .idplay-bg { background: rgba(245, 158, 11, 0.1); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.2); }
+
+        .price-box { background: rgba(3, 5, 12, 0.7); border-radius: 16px; padding: 22px; margin-bottom: 20px; border: 1px solid rgba(255,255,255,0.02); }
+        .price-title { font-size: 0.75rem; text-transform: uppercase; color: #4b5563; margin-bottom: 15px; font-weight: 800; letter-spacing: 1.5px; }
+        .price-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px dashed rgba(255, 255, 255, 0.05); font-size: 0.95rem; }
+        .price-item:last-child { border-bottom: none; }
+        .speed-label { font-weight: 600; color: #94a3b8; }
+        .price-value { font-weight: 800; color: #ffffff; transition: color 0.3s; }
+        .provider-card:hover .price-value { color: #f6d365; }
+
+        .promo-tag { background: rgba(246, 211, 101, 0.03); border: 1px solid rgba(246, 211, 101, 0.15); color: #f6d365; border-radius: 14px; padding: 12px; font-size: 0.85rem; margin-bottom: 25px; text-align: center; font-weight: 600; }
+
+        .card-btn { display: block; width: 100%; background: #0f172a; color: #ffffff; text-align: center; padding: 16px; border-radius: 14px; text-decoration: none; font-weight: 700; text-transform: uppercase; border: 1px solid rgba(255, 255, 255, 0.05); transition: all 0.4s ease; margin-top: auto; letter-spacing: 1px; font-size: 0.9rem; }
+        .provider-card:hover .card-btn { background: linear-gradient(90deg, #00f2fe, #4facfe); color: #02040a; box-shadow: 0 10px 25px rgba(0, 242, 254, 0.3); border-color: transparent; }
+
+        /* --- REGISTRATION FORM --- */
+        .form-container {
+            background: #ffffff;
+            color: #0f172a;
+            border-radius: 28px;
+            padding: 55px;
+            box-shadow: 0 30px 70px rgba(0, 0, 0, 0.6);
+            max-width: 850px;
+            margin: 40px auto 0 auto;
+            position: relative;
+            scroll-margin-top: 100px;
+        }
+        .form-container::before {
+            content: '';
+            position: absolute;
+            top: -3px; left: -3px; right: -3px; bottom: -3px;
+            background: linear-gradient(45deg, #00f2fe, #f6d365);
+            border-radius: 31px;
+            z-index: -1;
+        }
+        .form-container h3 {
+            color: #b91c1c;
+            font-size: 1.8rem;
+            margin-bottom: 30px;
+            font-weight: 900;
+            border-bottom: 3px solid #f1f5f9;
+            padding-bottom: 15px;
+        }
+        .form-group { margin-bottom: 26px; }
+        .form-group label {
+            display: block; font-weight: 700; margin-bottom: 10px; color: #475569; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px;
+        }
+        .form-control {
+            width: 100%; padding: 16px 20px; background-color: #f8fafc; border: 2px solid #e2e8f0; border-radius: 12px; font-size: 1rem; color: #0f172a; transition: all 0.3s ease;
+        }
+        .form-control:focus {
+            border-color: #02040a; background-color: #ffffff; outline: none; box-shadow: 0 0 0 5px rgba(15, 23, 42, 0.08);
+        }
+        .form-row { display: flex; gap: 20px; }
+        .form-row .form-group { flex: 1; }
+
+        /* Highlight untuk Pilihan Paket */
+        .highlight-select {
+            border: 2px solid #00f2fe;
+            background-color: #f0fdfa;
+            font-weight: 700;
+        }
+
+        .btn-submit-wa {
+            display: flex; align-items: center; justify-content: center; width: 100%; background: linear-gradient(135deg, #25d366, #1ec259); color: #ffffff; border: none; padding: 18px; font-size: 1.2rem; font-weight: 800; border-radius: 12px; cursor: pointer; transition: all 0.3s ease; margin-top: 20px; box-shadow: 0 8px 25px rgba(37, 211, 102, 0.2); text-transform: uppercase;
+        }
+        .btn-submit-wa:hover {
+            background: linear-gradient(135deg, #1ec259, #15a84b); box-shadow: 0 12px 30px rgba(37, 211, 102, 0.4); transform: translateY(-3px);
+        }
+
+        footer {
+            text-align: center; padding: 60px 20px; color: #334155; font-size: 0.95rem; border-top: 1px solid rgba(255, 255, 255, 0.02); margin-top: 120px;
+        }
+
+        @keyframes pulseGlow {
+            0% { transform: scale(0.98); opacity: 0.5; filter: blur(8px); }
+            100% { transform: scale(1.02); opacity: 0.9; filter: blur(13px); }
+        }
+        @keyframes floatBadge {
+            0% { transform: translateY(0); }
+            50% { transform: translateY(-6px); }
+            100% { transform: translateY(0); }
+        }
+
+        @media (max-width: 768px) {
+            html { font-size: 14px; }
+            .menu-toggle { display: flex; }
+            .navbar-menu {
+                position: absolute; top: 100%; left: 0; width: 100%; background: #02040a; flex-direction: column; padding: 30px; gap: 20px; display: none; border-bottom: 1px solid rgba(0, 242, 254, 0.2);
+            }
+            .navbar-menu.active { display: flex; }
+            .hero { padding: 140px 20px 50px 20px; }
+            .hero h1 { font-size: 3.2rem; }
+            .hero-description { font-size: 1.15rem; padding: 0 10px; }
+            .slide-text-container { gap: 6px; height: 35px; }
+            .slide-word { font-size: 1.3rem; }
+            .moving-section-title { font-size: 2.1rem; }
+            .form-row { flex-direction: column; gap: 0; }
+            .form-container { padding: 40px 20px; }
+            .provider-card { transform: none !important; } 
+        }
+    </style>
+</head>
+<body>
+
+    <div class="bg-animate-overlay"></div>
+    <canvas id="particle-canvas"></canvas>
+
+    <nav class="navbar">
+        <div class="navbar-container">
+            <a href="#home" class="navbar-logo">🌐 DUNIA INTERNET</a>
+            <div class="menu-toggle" id="mobile-toggle">
+                <span></span><span></span><span></span>
+            </div>
+            <ul class="navbar-menu" id="nav-menu">
+                <li class="navbar-item"><a href="#home">Home</a></li>
+                <li class="navbar-item"><a href="#paket">Pilihan Paket</a></li>
+                <li class="navbar-item"><a href="#formulir-pendaftaran" class="nav-btn">Daftar Sekarang</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <section class="hero" id="home">
+        <div class="hero-badge">⚡ INTEGRATED INTERNET SERVICE AGENT</div>
+        <h1>DUNIA INTERNET</h1>
+        <p class="hero-description">
+            Platform pendaftaran pemasangan WiFi resmi terintegrasi. Bandingkan tarif terbaik, pilih provider favorit, langsung pasang hari ini.
+        </p>
+        <div class="slide-text-container">
+            <span class="slide-word word-1">Koneksi</span>
+            <span class="slide-word word-2">Tanpa</span>
+            <span class="slide-word word-3">Batas</span>
+        </div>
+    </section>
+
+    <div class="container">
+        
+        <h2 class="moving-section-title" id="paket">Pilihan Paket <span>WiFi Terbaik</span></h2>
+        
+        <div class="provider-grid">
+            
+          <div class="provider-card scroll-animate">
+                <div class="card-header">
+                    <span class="brand-name indosat">Indosat HiFi</span>
+                    <span class="badge indosat-bg">Promo Kuat</span>
+                </div>
+                <div class="price-box">
+                    <div class="price-title">Internet Rumah Super Cepat</div>
+                    <div class="price-item"><span class="speed-label">HiFi Lite 20 Mbps</span><span class="price-value">Rp 205.350</span></div>
+                    <div class="price-item"><span class="speed-label">Paket Up To 100 Mbps</span><span class="price-value">Rp 220.890</span></div>
+                    <div class="price-item"><span class="speed-label">Paket Up To 300 Mbps</span><span class="price-value">Rp 331.890</span></div>
+                    <div class="price-item"><span class="speed-label">Paket Up To 500 Mbps</span><span class="price-value">Rp 442.890</span></div>
+                </div>
+                <div class="promo-tag">🎁 Bayar 5 Bulan Gratis 1 / Bayar 10 Bulan Gratis 2</div>
+                <a href="#formulir-pendaftaran" class="card-btn" onclick="setProvider('Indosat HiFi')">Pilih Indosat HiFi</a>
+            </div>
+
+            <div class="provider-card scroll-animate">
+                <div class="card-header">
+                    <span class="brand-name indihome">IndiHome</span>
+                    <span class="badge indihome-bg">Promo</span>
+                </div>
+                <div class="price-box">
+                    <div class="price-title">Internet Only</div>
+                    <div class="price-item"><span class="speed-label">Kecepatan 20 Mbps</span><span class="price-value">Rp 194.250</span></div>
+                    <div class="price-item"><span class="speed-label">Kecepatan 50 Mbps</span><span class="price-value">Rp 260.300</span></div>
+                    <div class="price-item"><span class="speed-label">Kecepatan 75 Mbps</span><span class="price-value">Rp 282.500</span></div>
+                    <div class="price-item"><span class="speed-label">Kecepatan 150 Mbps</span><span class="price-value">Rp 365.750</span></div>
+                    
+                </div>
+                <div class="price-box">
+                    <div class="price-title">One Dynamic</div>
+                    <div class="price-item"><span class="speed-label">Kecepatan 20 Mbps/30Gb </span><span class="price-value">Rp 227.500</span></div>
+                    <div class="price-item"><span class="speed-label">Kecepatan 50 Mbps/15Gb</span><span class="price-value">Rp 304.700</span></div>
+                    <div class="price-item"><span class="speed-label">Kecepatan 50 Mbps/30Gb</span><span class="price-value">Rp 332.450</span></div>
+                    <div class="price-item"><span class="speed-label">Kecepatan 75 Mbps/15Gb</span><span class="price-value">Rp 321.350</span></div>
+                    <div class="price-item"><span class="speed-label">Kecepatan 75 Mbps/30Gb</span><span class="price-value">Rp 349.100</span></div>
+                    <div class="price-item"><span class="speed-label">Kecepatan 100 Mbps/15Gb</span><span class="price-value">Rp 365.750</span></div>
+
+
+                </div>
+                <div class="promo-tag">📝 Biaya Pasang Rp 99.000 & Sudah Termasuk PPN 11%</div>
+                <a href="#formulir-pendaftaran" class="card-btn" onclick="setProvider('IndiHome')">Pilih IndiHome</a>
+            </div>
+
+            <div class="provider-card scroll-animate">
+                <div class="card-header">
+                    <span class="brand-name myrep">MyRepublic</span>
+                    <span class="badge myrep-bg">Value</span>
+                </div>
+                <div class="price-box">
+                    <div class="price-title">Paket Reguler</div>
+                    <div class="price-item"><span class="speed-label">Sahabat 75 Mbps</span><span class="price-value">Rp 205.000</span></div>
+                    <div class="price-item"><span class="speed-label">Neo 200 Mbps</span><span class="price-value">Rp 233.100</span></div>
+                    <div class="price-item"><span class="speed-label">Velo 300 Mbps</span><span class="price-value">Rp 277.500</span></div>
+                    <div class="price-item"><span class="speed-label">Nexus 400 Mbps</span><span class="price-value">Rp 333.000</span></div>
+                    <div class="price-item"><span class="speed-label">Prime 500 Mbps</span><span class="price-value">Rp 555.000</span></div>
+ </div>
+ <div class="price-box">
+                    <div class="price-title">Special MyGamers</div>
+                    <div class="price-item"><span class="speed-label">MyGamers silver 350 Mbps</span><span class="price-value">Rp 444.500</span></div>
+                    <div class="price-item"><span class="speed-label">MyGamers gold 500 Mbps</span><span class="price-value">Rp 610.500</span></div>
+                    <div class="price-item"><span class="speed-label">MyGamers diamond 750 Mbps</span><span class="price-value">Rp 777.000</span></div>
+                    <div class="price-item"><span class="speed-label">MyGamers platinum 1 Gb</span><span class="price-value">Rp 999.000</span></div>
+                    
+ </div>
+                <div class="promo-tag">💥 Promo Spesial: 9 GET 3 & 12 GET 6!</div>
+                <a href="#formulir-pendaftaran" class="card-btn" onclick="setProvider('MyRepublic')">Pilih MyRepublic</a>
+            </div>
+
+            <div class="provider-card scroll-animate">
+                <div class="card-header">
+                    <span class="brand-name cbn">CBN Fiber</span>
+                    <span class="badge cbn-bg">Simetris</span>
+                </div>
+                <div class="price-box">
+                    <div class="price-title">Fiber Internet Only</div>
+                    <div class="price-item"><span class="speed-label">Fiber 20 Internet Only (20 Mbps)</span><span class="price-value">Rp 193.140</span></div>
+                    <div class="price-item"><span class="speed-label">Fiber 20 + Dramaflix (70 Mbps)</span><span class="price-value">Rp 209.790</span></div>
+                    <div class="price-item"><span class="speed-label">Fiber 30 + Dramaflix (110 Mbps)</span><span class="price-value">Rp 243.090</span></div>
+                    <div class="price-item"><span class="speed-label">Fiber 50 Internet Only (100 Mbps)</span><span class="price-value">Rp 259.740</span></div>
+                   <div class="price-item"><span class="speed-label">Fiber 50 + Dramaflix  (150 Mbps)</span><span class="price-value">Rp 276.390</span></div>
+                    <div class="price-item"><span class="speed-label">Fiber 100 Internet Only (200 Mbps)</span><span class="price-value">Rp 481.740</span></div>
+                    <div class="price-item"><span class="speed-label">Fiber 100 + Dramaflix (250 Mbps)</span><span class="price-value">Rp 498.390</span></div>
+                    <div class="price-item"><span class="speed-label">Dens Tv (STB V.3)</span><span class="price-value">Rp 61.000</span></div>
+
+                </div>
+                <div class="promo-tag">🚀 Gratis Pasang, Tanpa FUP & Upload-Download 1:1</div>
+                <a href="#formulir-pendaftaran" class="card-btn" onclick="setProvider('CBN Fiber')">Pilih CBN Fiber</a>
+            </div>
+
+              <div class="provider-card scroll-animate">
+                <div class="card-header">
+                    <span class="brand-name xl">XL SATU</span>
+                    <span class="badge xl-bg">Harga Flat</span>
+                </div>
+                <div class="price-box">
+                    <div class="price-title">Internet Only & TV Channel</div>
+                    <div class="price-item"><span class="speed-label">Starter 20 Mbps</span><span class="price-value">Rp 205.350</span></div>
+                    <div class="price-item"><span class="speed-label">Smart 250 Mbps (+STB)</span><span class="price-value">Rp 254.190</span></div>
+                    <div class="price-item"><span class="speed-label">Family 350 Mbps (+STB)</span><span class="price-value">Rp 309.690</span></div>
+                    <div class="price-item"><span class="speed-label">Super User 400 Mbps (+STB)</span><span class="price-value">Rp 331.890</span></div>
+                    <div class="price-item"><span class="speed-label">Super User 600 Mbps (+STB)</span><span class="price-value">Rp 555.000</span></div>
+                    <div class="price-item"><span class="speed-label">Super User 1 Gbps (+STB)</span><span class="price-value">Rp 999.000</span></div>
+
+
+                </div>
+                <div class="price-box">
+                    <div class="price-title">Fixed Mobile Convergence</div>
+                    <div class="price-item"><span class="speed-label">Basic Starter 30 Mbps + bonus kuota bersama 2 nomor XL 8 Gb (Biaya pasang Rp 111.000) </span><span class="price-value">Rp 231.990</span></div>
+                    <div class="price-item"><span class="speed-label">Basic Smart 75 Mbps  + bonus kuota bersama 2 nomor XL 10 Gb (Biaya pasang gratis) </span><span class="price-value">Rp 276.390</span></div>
+  
+                </div>
+                <div class="promo-tag">🔒 Jaminan Harga Flat Selama Berlangganan!</div>
+                <a href="#formulir-pendaftaran" class="card-btn" onclick="setProvider('XL Satu')">Pilih XL Satu</a>
+            </div>
+
+
+            <div class="provider-card scroll-animate">
+                <div class="card-header">
+                    <span class="brand-name idplay">idPLAY</span>
+                    <span class="badge idplay-bg">Flat Selamanya</span>
+                </div>
+                <div class="price-box">
+                    <div class="price-title">WiFi Hemat & Cepat</div>
+                    <div class="price-item"><span class="speed-label">SimplyFun 20 Mbps</span><span class="price-value">Rp 198.960</span></div>
+                    <div class="price-item"><span class="speed-label">SuperFun 30 Mbps</span><span class="price-value">Rp 265.290</span></div>
+                    <div class="price-item"><span class="speed-label">FamilyFun 50 Mbps</span><span class="price-value">Rp 309.690</span></div>
+                    <div class="price-item"><span class="speed-label">Fun Tastic 75 Mbps</span><span class="price-value">Rp 331.890</span></div>
+                    <div class="price-item"><span class="speed-label">Ultra Fun 100 Mbps</span><span class="price-value">Rp 354.090</span></div>
+                    <div class="price-item"><span class="speed-label">Ultimate Fun 200 Mbps</span><span class="price-value">Rp 409.590</span></div>
+
+
+                </div>
+                <div class="promo-tag">🛠️ Biaya Instalasi Rp 150.000 & Unlimited Tanpa FUP</div>
+                <a href="#formulir-pendaftaran" class="card-btn" onclick="setProvider('idPLAY')">Pilih idPLAY</a>
+            </div>
+
+        </div>
+
+        <div class="form-container scroll-animate" id="formulir-pendaftaran">
+            <h3>Formulir Pendaftaran Provider <span id="nama-provider-label">WiFi</span></h3>
+            
+            <form id="registrationForm" onsubmit="handleFormSubmit(event)">
+                <input type="hidden" id="provider_pilihan" value="WiFi">
+
+                <div class="form-group">
+                    <label for="paket_detail">Pilih Varian Kecepatan & Tarif Harga</label>
+                    <select id="paket_detail" class="form-control highlight-select" required>
+                        <option value="">-- Silahkan Pilih Provider Di Atas Terlebih Dahulu --</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="nama_lengkap">Nama Lengkap Sesuai KTP</label>
+                    <input type="text" id="nama_lengkap" class="form-control" placeholder="Masukkan nama lengkap Anda" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="alamat_lengkap">Alamat Lengkap Pemasangan</label>
+                    <input type="text" id="alamat_lengkap" class="form-control" placeholder="Nama jalan, nomor rumah, cluster, dll" required>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="rt_no">RT</label>
+                        <input type="text" id="rt_no" class="form-control" placeholder="000" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="rw_no">RW</label>
+                        <input type="text" id="rw_no" class="form-control" placeholder="000" required>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="kel_kec">Kelurahan / Kecamatan</label>
+                    <input type="text" id="kel_kec" class="form-control" placeholder="Masukkan kelurahan & kecamatan" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="kota_kab">Kota / Kabupaten</label>
+                    <input type="text" id="kota_kab" class="form-control" placeholder="Masukkan kota tempat tinggal" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="maps_link">Link Share Location / Google Maps</label>
+                    <input type="text" id="maps_link" class="form-control" placeholder="http://maps.google.com/...">
+                </div>
+
+                <button type="submit" class="btn-submit-wa">
+                    Kirim Data Pendaftaran via WhatsApp
+                </button>
+            </form>
+        </div>
+
+    </div>
+
+    <footer>
+        <p>© 2026 Agen Resmi Pemasangan WiFi Terintegrasi. Proses Cepat & Terpercaya.</p>
+    </footer>
+
+    <script>
+        // === DATA DETAIL VARIANT PAKET HARGA ===
+        const dataPaket = {
+            "XL Satu": [
+                { speed: "Internet Only & Tv Chanel :Starter 20 Mbps", price: "Rp 205.350/bulan + (biaya pemasangan Rp.111.000)" },
+                { speed: "Internet Only & Tv Chanel :Smart 250 Mbps (+STB)", price: "Rp 254.190/bulan + (biaya pemasangan gratis)" },
+                { speed: "Internet Only & Tv Chanel :Family 350 Mbps (+STB)", price: "Rp 309.690/bulan + (biaya pemasangan gratis)" },
+                { speed: "Internet Only & Tv Chanel :Super User 400 Mbps (+STB)", price: "Rp 331.890/bulan + (biaya pemasangan gratis)"},
+                { speed: "Internet Only & Tv Chanel :Ultra 600 Mbps (+STB)", price: "Rp 555.000/bulan + (biaya pemasangan gratis)"},
+                { speed: "Internet Only & Tv Chanel :Super User 1 Gbps (+STB)", price: "Rp 999.000/bulan + (biaya pemasangan gratis)"},
+                { speed: "Fixed Mobile Convergence :Basic Starter 30 Gbps (Bonus Kuota bersama 2 nomor XL 8GB/bulan)", price: "Rp 231.990/bulan + (biaya pemasangan Rp.111.000)"},
+                { speed: "Fixed Mobile Convergence :Basic Starter 30 Gbps (Bonus Kuota bersama 2 nomor XL 10GB/bulan)", price: "Rp 231.990/bulan + (biaya pemasangan gratis)"},
+                
+                
+            ],
+            "IndiHome": [
+                { speed: "Internet Only :Kecepatan 20 Mbps", price: "Rp 194.250/bulan + (Deposit 1 bulan tagihan)"},
+                { speed: "Internet Only :Kecepatan 50 Mbps", price: "Rp 260.300/bulan + (Biaya Pemasangan Rp 99.000)"},
+                { speed: "Internet Only :Kecepatan 75 Mbps", price: "Rp 282.500/bulan + (Biaya Pemasangan Rp 99.000)" },
+                { speed: "Internet Only:Kecepatan 150 Mbps", price: "Rp 365.750/bulan + (Biaya Pemasangan Rp 99.000) " },
+                { speed: "One Dynamic:Kecepatan 20 Mbps/30Gb", price: "Rp 227.500/bulan + (Deposit 1 bulan tagihan)" },
+                { speed: "One Dynamic:Kecepatan 50 Mbps/15Gb", price: "Rp 304.700/bulan + (Biaya Pemasangan Rp 99.000)"},
+                { speed: "One Dynamic:Kecepatan 50 Mbps/30Gb", price: "Rp 332.450/bulan + (Biaya Pemasangan Rp 99.000)"},
+                { speed: "One Dynamic:Kecepatan 75 Mbps/15Gb", price: "Rp 321.350/bulan + (Biaya Pemasangan Rp 99.000)"},
+                { speed: "One Dynamic:Kecepatan 75 Mbps/30Gb", price: "Rp 349.100/bulan + (Biaya Pemasangan Rp 99.000)"},
+                { speed: "One Dynamic:Kecepatan 100 Mbps/15Gb", price: "Rp 365.750/bulan + (Biaya Pemasangan Rp 99.000)"},               
+
+            ],
+            "MyRepublic": [
+                { speed: "Paket Reguler: Sahabat 75 Mbps", price: "Rp 205.000/bulam" },
+                { speed: "Paket Reguler: Neo 200 Mbps", price: "Rp 233.100/bulan" },
+                { speed: "Paket Reguler: Velo 300 Mbps", price: "Rp 277.500/bulan"},
+                { speed: "Paket Reguler: Nexus 400 Mbps", price: "Rp 333.000/bulan"},
+                { speed: "Paket Reguler: Prime 500 Mbps", price: "Rp 555.000/bulan"},
+                { speed: "SpecialMyGamers: MyGamers silver 350 Mbps", price: "Rp 444.500/bulan"},
+                 { speed: "SpecialMyGamers: MyGamers gold 500 Mbps", price: "Rp 610.500/bulan"},
+                { speed: "SpecialMyGamers: MyGamers Diamond 750 Mbps", price: "Rp 777.000/bulan"},
+                 { speed: "SpecialMyGamers: MyGamers Platinum", price: "Rp 999.000/bulan"}, 
+            ],
+            "CBN Fiber": [
+                { speed: "Fiber 20 + Internet Only (20 Mbps)", price: "Rp 193.140/bulan" },
+                { speed: "Fiber 20 + Dramaflix (70 Mbps)", price: "Rp 209.790/bulan" },
+                { speed: "Fiber 30 + Dramaflix (110 Mbps)", price: "Rp 243.090/bulan" },
+                { speed: "Fiber 50 + Internet Only (100 Mbps)", price: "Rp 259.740/bulan"},
+                { speed: "Fiber 50 + Dramaflix (150 Mbps)", price: "Rp 276.390/bulan"},
+                { speed: "Fiber 100 + Internet Only (200 Mbps)", price: "Rp 481.740/bulan"},
+                { speed: "Fiber 100 + Dramaflix (250 Mbps)", price: "Rp 498.390/bulan"},
+              { speed: "Dens Tv + Speed (50 Mbps)/STB V.3", price: "Rp 61.000"},
+
+            ],
+            "Indosat HiFi": [
+                { speed: "HiFi Lite 20 Mbps", price: "Rp 205.350/bulan" },
+                { speed: "Paket Up To 100 Mbps", price: "Rp 220.890/bulan" },
+                { speed: "Paket Up To 300 Mbps", price: "Rp 331.890/bulan" },
+                 { speed:"Paket Up To 500 Mbps", price: "Rp 442.890/bulan" },
+            ],
+            "idPLAY": [
+                { speed: "SimplyFun 20 Mbps", price: "Rp 198.960/bulan" },
+                { speed: "SuperFun 30 Mbps", price: "Rp 265.290/bulan" },
+                { speed: "FamilyFun 50 Mbps", price: "Rp 309.690/bulan" },
+                { speed: "Fun Tastic 75 Mbps", price: "Rp 331.890/bulan" },
+                { speed: "Ultra Fun 100 Mbps", price: "Rp 354.090/bulan" },
+                { speed: "Ultimate Fun 200 Mbps", price: "Rp 409.590/bulan" },
+                
+            ]
+        };
+
+        // Fungsi Trigger saat klik tombol Provider Card
+        function setProvider(providerName) {
+            document.getElementById('nama-provider-label').innerText = providerName;
+            document.getElementById('provider_pilihan').value = providerName;
+
+            const selectElement = document.getElementById('paket_detail');
+            selectElement.innerHTML = ''; // Reset option
+
+            // Isi dropdown secara otomatis berdasarkan list data paketan yang diklik
+            if (dataPaket[providerName]) {
+                const defaultOpt = document.createElement('option');
+                defaultOpt.value = "";
+                defaultOpt.innerText = `-- Pilih Kecepatan ${providerName} yang Sesuai Budget --`;
+                selectElement.appendChild(defaultOpt);
+
+                dataPaket[providerName].forEach(item => {
+                    const option = document.createElement('option');
+                    option.value = `${item.speed} (${item.price})`;
+                    option.innerText = `${item.speed} --- [ ${item.price} ]`;
+                    selectElement.appendChild(option);
+                });
+            }
+        }
+
+        // === ENGINE ANIMASI PARTIKEL BACKROUND ===
+        const canvas = document.getElementById('particle-canvas');
+        const ctx = canvas.getContext('2d');
+        let particlesArray = [];
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        class CyberParticle {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = canvas.height + Math.random() * 100;
+                this.size = Math.random() * 3 + 1;
+                this.speedY = Math.random() * 1.2 + 0.4;
+                this.opacity = Math.random() * 0.4 + 0.1;
+            }
+            update() {
+                this.y -= this.speedY;
+                if (this.y < -10) {
+                    this.y = canvas.height + 10;
+                    this.x = Math.random() * canvas.width;
+                }
+            }
+            draw() {
+                ctx.fillStyle = `rgba(0, 242, 254, ${this.opacity})`;
+                ctx.fillRect(this.x, this.y, this.size, this.size);
+            }
+        }
+
+        function initParticles() {
+            particlesArray = [];
+            const count = Math.min(50, window.innerWidth / 25);
+            for (let i = 0; i < count; i++) {
+                particlesArray.push(new CyberParticle());
+            }
+        }
+        initParticles();
+
+        function animateParticles() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particlesArray.forEach(p => { p.update(); p.draw(); });
+            requestAnimationFrame(animateParticles);
+        }
+        animateParticles();
+
+        // === JS PARALLAX 3D INTERACTIVE TILT ===
+        const cardsElements = document.querySelectorAll('.provider-card');
+        cardsElements.forEach(card => {
+            card.addEventListener('mousemove', (e) => {
+                if (window.innerWidth <= 768) return;
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                const centerX = rect.width / 2;
+                const centerY = rect.height / 2;
+                const rotateX = ((centerY - y) / centerY) * 10;
+                const rotateY = ((x - centerX) / centerX) * 10;
+                card.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-6px)`;
+            });
+            card.addEventListener('mouseleave', () => {
+                card.style.transform = 'rotateX(0deg) rotateY(0deg) translateY(0)';
+            });
+        });
+
+        // === SCROLL REVEAL OBSERVER ENGINE ===
+        const animatedElements = document.querySelectorAll('.scroll-animate');
+        const gridCards = document.querySelectorAll('.provider-grid .provider-card');
+        gridCards.forEach((c, idx) => {
+            c.style.transitionDelay = `${(idx % 3) * 0.08}s`;
+        });
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) entry.target.classList.add('show');
+                else entry.target.classList.remove('show');
+            });
+        }, { root: null, rootMargin: '-20px 0px', threshold: 0.02 });
+        animatedElements.forEach(el => observer.observe(el));
+
+        // === RESPONSIVE NAVBAR ACCORDION ===
+        const mobileToggle = document.getElementById('mobile-toggle');
+        const navMenu = document.getElementById('nav-menu');
+        mobileToggle.addEventListener('click', () => {
+            navMenu.classList.toggle('active');
+        });
+        document.querySelectorAll('.navbar-item a').forEach(link => {
+            link.addEventListener('click', () => navMenu.classList.remove('active'));
+        });
+
+        // === WHATSAPP INTEGRATION WITH DETAILS ===
+        function handleFormSubmit(event) {
+            event.preventDefault();
+            const whatsappTargetNumber = ' 6288991652063'; // Silahkan ganti nomor WA kamu di sini
+            
+            const provider = document.getElementById('provider_pilihan').value;
+            const detailPaket = document.getElementById('paket_detail').value;
+            const nama = document.getElementById('nama_lengkap').value;
+            const alamat = document.getElementById('alamat_lengkap').value;
+            const rt = document.getElementById('rt_no').value;
+            const rw = document.getElementById('rw_no').value;
+            const kelKec = document.getElementById('kel_kec').value;
+            const kotaKab = document.getElementById('kota_kab').value;
+            const maps = document.getElementById('maps_link').value || '-';
+
+            if(provider === "WiFi" || detailPaket === "") {
+                alert("Silahkan pilih provider wifi dan detail harga paket terlebih dahulu di atas!");
+                return;
+            }
+
+            const textMessage = `*FORMULIR PENDAFTARAN PASANG BARU WiFi*%0A%0A` +
+                                `🖥️ *Provider:* ${provider.toUpperCase()}%0A` +
+                                `📦 *Paket Pilihan:* ${detailPaket}%0A%0A` +
+                                `👤 *Nama Lengkap:* ${nama}%0A` +
+                                `📍 *Alamat Pemasangan:* ${alamat}%0A` +
+                                `🏢 *RT / RW:* ${rt} / ${rw}%0A` +
+                                `🏡 *Kelurahan / Kecamatan:* ${kelKec}%0A` +
+                                `🏙️ *Kota / Kabupaten:* ${kotaKab}%0A` +
+                                `🔗 *Link Google Maps:* ${maps}%0A%0A` +
+                                `Mohon segera dicek ketersediaan jaringan (coverage area) untuk lokasi saya. Terima kasih!`;
+
+            window.open(`https://api.whatsapp.com/send?phone=${whatsappTargetNumber}&text=${textMessage}`, '_blank');
+        }
+    </script>
+</body>
+</html>
